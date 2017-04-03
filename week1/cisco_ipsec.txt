@@ -127,37 +127,3 @@ interface FastEthernet3
  no ip address
 !
 interface FastEthernet4
- description *** LAN connection (don't change) ***
- ip address 10.220.88.20 255.255.255.0
- duplex auto
- speed auto
-!
-interface Vlan1
- no ip address
-!
-ip forward-protocol nd
-no ip http server
-no ip http secure-server
-!
-!
-ip route 0.0.0.0 0.0.0.0 10.220.88.1
-!
-!
-!
-!
-!
-control-plane
-!
-!
-!
-line con 0
- no modem enable
-line aux 0
-line vty 0 4
- transport input ssh
-!
-scheduler max-task-time 5000
-ntp server 130.126.24.24
-ntp server 152.2.21.1
-!
-end
