@@ -10,6 +10,9 @@ policy-map QOS_1
 !
 interface Ethernet0/0
  ip address 1.1.2.1 255.255.255.0
+ ip helper-address 10.1.1.110
+ ip helper-address 10.2.2.200 
+ ip helper-address 10.5.7.20
  no cdp enable
 !
 interface Serial1/0
