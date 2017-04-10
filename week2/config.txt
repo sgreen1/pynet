@@ -1,0 +1,218 @@
+show config
+Using 4293 out of 262136 bytes
+!
+! Last configuration change at 04:16:18 PDT Mon Apr 10 2017 by pyclass
+! NVRAM config last updated at 12:05:10 PDT Mon Apr 10 2017 by pyclass
+!
+version 15.4
+no service pad
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+no service password-encryption
+!
+hostname pynet-rtr1
+!
+boot-start-marker
+boot system flash c880data-universalk9-mz.154-2.T1.bin
+boot-end-marker
+!
+!
+logging buffered 10000
+no logging console
+enable secret 5 $1$39ck$mpfZ3sWVn10YCXhSWI48R/
+!
+aaa new-model
+!
+!
+aaa authentication login default local
+aaa authorization exec default local if-authenticated 
+!
+!
+!
+!
+!
+aaa session-id common
+memory-size iomem 10
+clock timezone PST -8 0
+clock summer-time PDT recurring
+!
+crypto pki trustpoint TP-self-signed-1429897839
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-1429897839
+ revocation-check none
+ rsakeypair TP-self-signed-1429897839
+!
+!
+crypto pki certificate chain TP-self-signed-1429897839
+ certificate self-signed 01 nvram:IOS-Self-Sig#3.cer
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+!
+!
+!
+!
+no ip domain lookup
+ip domain name twb-tech.com
+ip cef
+no ipv6 cef
+!
+!
+multilink bundle-name authenticated
+license udi pid CISCO881-SEC-K9 sn FTX1512038X
+!
+!
+archive
+ path flash:pynet-rtr1-cfg
+username pyclass privilege 15 secret 5 $1$CQCe$poonB1jFHYQAWt/3eXub41
+username testuser privilege 15 secret 5 $1$A5eB$6XIBwB/8iwj4U
+username test9 secret 5 $1$CQCe$poonB1jFHYQAWt/3eXub41
+!
+!
+!
+!
+lldp run
+!
+ip ssh version 2
+ip ssh pubkey-chain
+  username testuser
+   key-hash ssh-rsa E5D7E26A603DD18923113E45F29BDF22 ktbyers@twb-tech.com
+ip scp server enable
+! 
+!
+crypto isakmp policy 10
+ encr aes
+ authentication pre-share
+ group 5
+crypto isakmp key KEY address 1.1.1.1         no-xauth
+crypto isakmp key KEY address 2.2.2.1         no-xauth
+crypto isakmp key KEY address 3.3.3.1         no-xauth
+crypto isakmp key KEY address 4.4.4.1         no-xauth
+crypto isakmp key KEY address 5.5.5.1         no-xauth
+crypto isakmp keepalive 10 periodic
+!
+!
+crypto ipsec transform-set AES192-SHA esp-aes 192 esp-sha-hmac 
+ mode tunnel
+crypto ipsec transform-set AES-SHA esp-aes esp-sha-hmac 
+ mode tunnel
+crypto ipsec transform-set 3DES-SHA esp-3des esp-sha-hmac 
+ mode tunnel
+!
+!
+!
+crypto map CRYPTO 10 ipsec-isakmp 
+ ! Incomplete
+ set peer 1.1.1.1
+ set transform-set AES-SHA 
+ set pfs group5
+ match address VPN-TEST1
+crypto map CRYPTO 20 ipsec-isakmp 
+ ! Incomplete
+ set peer 2.2.2.1
+ set transform-set AES-SHA 
+ set pfs group2
+ match address VPN-TEST2
+crypto map CRYPTO 30 ipsec-isakmp 
+ ! Incomplete
+ set peer 3.3.3.1
+ set transform-set AES-SHA 
+ set pfs group2
+ match address VPN-TEST3
+crypto map CRYPTO 40 ipsec-isakmp 
+ ! Incomplete
+ set peer 4.4.4.1
+ set transform-set AES-SHA 
+ set pfs group5
+ match address VPN-TEST4
+crypto map CRYPTO 50 ipsec-isakmp 
+ ! Incomplete
+ set peer 5.5.5.1
+ set transform-set AES-SHA 
+ set pfs group5
+ match address VPN-TEST5
+!
+!
+!
+!
+!
+interface FastEthernet0
+ no ip address
+!
+interface FastEthernet1
+ no ip address
+!
+interface FastEthernet2
+ no ip address
+!
+interface FastEthernet3
+ no ip address
+!
+interface FastEthernet4
+ description *** LAN connection (don't change) ***
+ ip address 10.220.88.20 255.255.255.0
+ duplex auto
+ speed auto
+!
+interface Vlan1
+ no ip address
+!
+router bgp 42
+ bgp router-id 10.220.88.20
+ bgp log-neighbor-changes
+ neighbor 10.220.88.38 remote-as 44
+!
+ip forward-protocol nd
+no ip http server
+no ip http secure-server
+!
+!
+ip route 0.0.0.0 0.0.0.0 10.220.88.1
+!
+ip access-list extended VPN-TEST1
+ip access-list extended VPN-TEST2
+ip access-list extended VPN-TEST3
+ip access-list extended VPN-TEST4
+ip access-list extended VPN-TEST5
+!
+!
+snmp-server group READONLY v3 priv read VIEWSTD access 98
+snmp-server view VIEWSTD iso included
+snmp-server community galileo RO 98
+snmp-server ifindex persist
+snmp-server location Freemont, CA
+snmp-server contact Kirk Byers
+access-list 98 remark *** SNMP ***
+access-list 98 permit any
+!
+!
+!
+control-plane
+!
+!
+!
+line con 0
+ logging synchronous
+ no modem enable
+line aux 0
+line vty 0 4
+ exec-timeout 20 0
+ transport input telnet ssh
+!
+scheduler max-task-time 5000
+ntp server 130.126.24.24
+ntp server 152.2.21.1
+onep
+ transport type tls localcert TP-self-signed-1429897839 disable-remotecert-validation
+ service set vty
+!
+end
+
+pynet-rtr1#
