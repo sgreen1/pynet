@@ -1,0 +1,10 @@
+
+
+hostname = pylab11a.twb-tech.com
+username = sgreen
+
+community_string = galileo
+
+ip_addr = '184.105.247.70'
+username = 'pyclass'
+password = '88newclass'

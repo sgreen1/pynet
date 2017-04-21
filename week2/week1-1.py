@@ -8,6 +8,13 @@ TELNET_PORT = 23
 TELNET_TIMEOUT = 6
 
 
+def login(remote_conn, username, password):
+    output = remote_conn.read_until("sername:", TELNET_TIMEOUT)
+    remote_conn.write(username + '\n')
+    output += remote_conn.read_until("assword:", TELNET_TIMEOUT)
+    remote_conn.write(password + '\n')
+    return output
+
 def send_command(remote_conn, cmd):
     cmd = cmd.rstrip()
     remote_conn.write(cmd + '\n')
@@ -15,21 +22,17 @@ def send_command(remote_conn, cmd):
     return remote_conn.read_very_eager()
    
 
-def telnet_connect():
+def main():
     ip_addr = '184.105.247.70'
     username = 'pyclass'
     password = '88newclass' 
 
     remote_conn = telnetlib.Telnet(ip_addr, TELNET_PORT, TELNET_TIMEOUT)
+
+    output = login(remote_conn, username, password)
+
+    print("doing stuff and thangs\n")
     
-    output = remote_conn.read_until("sername:", TELNET_TIMEOUT) 
-
-    output = send_command(remote_conn, username)
-
-    output = remote_conn.read_until("assword:", TELNET_TIMEOUT)
-
-    output = send_command(remote_conn, password) 
-
     output = send_command(remote_conn, 'terminal length 0')
     arp_output = send_command(remote_conn, 'show ip arp')
 
@@ -37,7 +40,7 @@ def telnet_connect():
 
     output = remote_conn.read_very_eager()
 
-    #print output
+    print output
     #print config
     #print(config)
  
@@ -52,7 +55,7 @@ def telnet_connect():
    
 
 
-telnet_connect()
+main()
 
 
 
